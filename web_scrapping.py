@@ -1,27 +1,44 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+import requests
 from bs4 import BeautifulSoup
+import time
 
-# Iniciar navegador
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-driver.get("https://thehackernews.com/")
+def obtener_pagina(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/116.0.0.0 Safari/537.36"
+    }
+    resp = requests.get(url, headers=headers)
+    resp.raise_for_status()
+    return resp.text
 
-# Esperar a que cargue el contenido
-driver.implicitly_wait(5)
+def parsear_articulos(html):
+    soup = BeautifulSoup(html, "html.parser")
+    artículos = []
+    # Aquí dependerá cómo estructura The Hacker News sus artículos:
+    for item in soup.find_all("div", class_="body-post"):  # ejemplo de clase, no sé si es la real
+        título_tag = item.find("h2")
+        enlace_tag = item.find("a", href=True)
+        resumen_tag = item.find("div", class_="post-body")  # ejemplo
+        if título_tag and enlace_tag:
+            artículo = {
+                "título": título_tag.get_text(strip=True),
+                "url": enlace_tag["href"],
+                "resumen": resumen_tag.get_text(strip=True) if resumen_tag else None
+            }
+            artículos.append(artículo)
+    return artículos
 
-# Obtener HTML renderizado
-html = driver.page_source
-soup = BeautifulSoup(html, "html.parser")
+def main():
+    url = "https://thehackernews.com/"
+    html = obtener_pagina(url)
+    artículos = parsear_articulos(html)
+    for a in artículos:
+        print(a["título"])
+        print(a["url"])
+        print(a["resumen"])
+        print("-" * 80)
+        time.sleep(1)  # para no hacer peticiones muy rápidas
 
-# Extraer titulares y enlaces
-articles = soup.find_all("div", class_="body-post")
-for article in articles:
-    title_tag = article.find("h2", class_="home-title")
-    link_tag = article.find("a", href=True)
-    if title_tag and link_tag:
-        print("Título:", title_tag.text.strip())
-        print("Enlace:", link_tag["href"])
-        print("-" * 50)
-
-driver.quit()
+if __name__ == "__main__":
+    main()
