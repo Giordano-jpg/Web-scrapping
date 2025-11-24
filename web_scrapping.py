@@ -58,17 +58,31 @@ def guardar_articulo(conn, titulo, url, resumen, contenido):
 
 def main():
     crear_tabla()
-
-    url = "https://thehackernews.com/"
-    html = obtener_pagina(url)
-    posts = parsear_portada(html)
     conn = sqlite3.connect("hackernews.db")
 
-    for a in posts:
-        contenido = obtener_contenido(a["url"])
-        guardar_articulo(conn, a["titulo"], a["url"], a["resumen"], contenido)
-        print("Guardado:", a["titulo"])
-    
+    url_actual = "https://thehackernews.com/"
+    paginas_recorridas = 0
+    max_paginas = 3  # Número de páginas que quieres scrapear
+
+    while url_actual and paginas_recorridas < max_paginas:
+        html = obtener_pagina(url_actual)
+        posts = parsear_portada(html)
+
+        for a in posts:
+            contenido = obtener_contenido(a["url"])
+            guardar_articulo(conn, a["titulo"], a["url"], a["resumen"], contenido)
+            print("Guardado:", a["titulo"])
+
+        # Buscar enlace a la siguiente página
+        soup = BeautifulSoup(html, "html.parser")
+        siguiente = soup.find("a", class_=["blog-pager-older-link", "blog-pager-older-link-mobile"])
+        if siguiente and "href" in siguiente.attrs:
+            url_actual = siguiente["href"]
+        else:
+            break
+
+        paginas_recorridas += 1
+
     conn.close()
 
 if __name__ == "__main__":
