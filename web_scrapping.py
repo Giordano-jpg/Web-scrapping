@@ -48,15 +48,13 @@ def crear_tabla():
     conn.commit()
     conn.close()
 
-def guardar_articulo(titulo, url, resumen, contenido):
-    conn = sqlite3.connect("hackernews.db")
+def guardar_articulo(conn, titulo, url, resumen, contenido):
     cursor = conn.cursor()
     cursor.execute("""
     INSERT OR IGNORE INTO articulos (titulo, url, resumen, contenido)
     VALUES (?, ?, ?, ?)
     """, (titulo, url, resumen, contenido))
     conn.commit()
-    conn.close()
 
 def main():
     crear_tabla()
@@ -64,11 +62,14 @@ def main():
     url = "https://thehackernews.com/"
     html = obtener_pagina(url)
     posts = parsear_portada(html)
+    conn = sqlite3.connect("hackernews.db")
 
     for a in posts:
         contenido = obtener_contenido(a["url"])
-        guardar_articulo(a["titulo"], a["url"], a["resumen"], contenido)
+        guardar_articulo(conn, a["titulo"], a["url"], a["resumen"], contenido)
         print("Guardado:", a["titulo"])
+    
+    conn.close()
 
 if __name__ == "__main__":
     main()

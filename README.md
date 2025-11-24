@@ -15,3 +15,6 @@ pip install beautifulsoup4
 ```python
 python web_scrapping.py
 ```
+
+# Extras
+VS Code + extensión SQLite Viewer (para visualizar la base de datos)
