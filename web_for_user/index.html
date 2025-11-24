@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Ciberseguridad</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        input, button { padding: 10px; font-size: 18px; }
+        #resultado { margin-top: 30px; font-size: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>Buscador de términos de ciberseguridad</h1>
+
+<input type="text" id="consulta" placeholder="Escribe algo (malware, phishing...)">
+<button onclick="enviarConsulta()">Buscar</button>
+
+<div id="resultado"></div>
+
+<script>
+function enviarConsulta() {
+    const consulta = document.getElementById("consulta").value;
+
+    // AQUÍ se manda al backend (aunque aún no existe)
+    fetch("http://localhost:5000/buscar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: consulta })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("resultado").innerText = data.respuesta;
+    })
+    .catch(() => {
+        document.getElementById("resultado").innerText =
+            "Backend no disponible todavía.";
+    });
+}
+// backend: necesita
+//POST /buscar
+//{
+//   "query": "malware"
+//}
+
+//{
+//   "respuesta": "Malware es..."
+//}
+
+</script>
+
+
+</body>
+</html>
