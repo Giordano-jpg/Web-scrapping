@@ -72,7 +72,7 @@ def main():
 
     url_actual = "https://thehackernews.com/"
     paginas_recorridas = 0
-    max_paginas = 3  # Número de páginas que quieres scrapear
+    max_paginas = 3  # Número de páginas que queremos scrapear
 
     while url_actual and paginas_recorridas < max_paginas:
         html = obtener_pagina(url_actual)

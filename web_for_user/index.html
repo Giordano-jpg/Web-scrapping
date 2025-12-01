@@ -4,25 +4,100 @@
     <meta charset="UTF-8">
     <title>Consulta de Ciberseguridad</title>
     <style>
-        body { font-family: Arial; margin: 40px; }
-        input, button { padding: 10px; font-size: 18px; }
-        #resultado { margin-top: 30px; font-size: 20px; }
+        /* Fuentes y reset básico */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f6fa; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 50px 20px; 
+        }
+
+        h1 {
+            color: #2f3640;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Caja de búsqueda */
+        .buscador {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 2px solid #dcdde1;
+            border-radius: 8px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #40739e;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: #40739e;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #2f3640;
+        }
+
+        /* Resultado */
+        #resultado {
+            width: 100%;
+            max-width: 700px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 5px 20px rgba(0,0,0,0.1);
+            font-size: 18px;
+            line-height: 1.6;
+            color: #2f3640;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            input[type="text"], button {
+                font-size: 14px;
+                padding: 10px;
+            }
+            #resultado { font-size: 16px; padding: 15px; }
+        }
     </style>
 </head>
 <body>
 
 <h1>Buscador de términos de ciberseguridad</h1>
 
-<input type="text" id="consulta" placeholder="Escribe algo (malware, phishing...)">
-<button onclick="enviarConsulta()">Buscar</button>
+<div class="buscador">
+    <input type="text" id="consulta" placeholder="Escribe algo (malware, phishing...)">
+    <button onclick="enviarConsulta()">Buscar</button>
+</div>
 
-<div id="resultado"></div>
+<div id="resultado">Introduce un término y pulsa "Buscar".</div>
 
 <script>
 function enviarConsulta() {
     const consulta = document.getElementById("consulta").value;
 
-    // AQUÍ se manda al backend (aunque aún no existe)
     fetch("http://localhost:5000/buscar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -37,6 +112,7 @@ function enviarConsulta() {
             "Backend no disponible todavía.";
     });
 }
+
 // backend: necesita
 //POST /buscar
 //{
@@ -46,9 +122,10 @@ function enviarConsulta() {
 //{
 //   "respuesta": "Malware es..."
 //}
-
 </script>
-
 
 </body>
 </html>
+
+
+
