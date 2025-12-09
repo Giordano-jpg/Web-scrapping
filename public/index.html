@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackerNews</title>
+    <style>
+        body { font-family: system-ui; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        .articulo {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        h2 { margin: 0 0 12px 0; font-size: 1.4em; font-weight: 600; line-height: 1.3; }
+        .botones { margin-top: 15px; }
+        button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95em; }
+        .ver { background: #007bff; color: white; }
+        .resumir { background: #28a745; color: white; margin-left: 12px; }
+        .resumen {
+            background: #f8f9fa;
+            padding: 18px;
+            margin-top: 18px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            line-height: 1.5;
+            border-left: 4px solid #28a745;
+        }
+        small { color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>HackerNews</h1>
+    <div id="articulos"></div>
+
+    <script>
+        async function cargarArticulos() {
+            const contenedor = document.getElementById('articulos');
+            contenedor.innerHTML = '<p>Cargando...</p>';
+
+            try {
+                const res = await fetch('/api/articulos');
+                const articulos = await res.json();
+
+                if (!articulos.length) {
+                    contenedor.innerHTML = '<p>No hay artículos.</p>';
+                    return;
+                }
+
+                contenedor.innerHTML = '';
+
+                articulos.forEach(a => {
+                    const div = document.createElement('div');
+                    div.className = 'articulo';
+
+                    div.innerHTML = `
+                        <h2>${a.titulo || ''}</h2>
+                        <small>${a.fecha || ''}</small>
+                        <div class="botones">
+                            ${a.url ? `<button class="ver" onclick="window.open('${a.url}', '_blank')">Ver noticia</button>` : ''}
+                            <button class="resumir" onclick="resumir(${a.id}, this)">Resumir</button>
+                        </div>
+                        <div id="res${a.id}"></div>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            } catch (error) {
+                contenedor.innerHTML = '<p>Error al cargar.</p>';
+            }
+        }
+
+        async function resumir(id, boton) {
+            const div = document.getElementById('res' + id);
+            div.innerHTML = '<p>Generando resumen...</p>';
+            boton.disabled = true;
+            boton.textContent = 'Generando...';
+
+            try {
+                const resArticulo = await fetch('/api/articulos/' + id);
+                const articulo = await resArticulo.json();
+
+                const texto = articulo.contenido || articulo.titulo || '';
+
+                const res = await fetch('/api/resumir', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Error');
+                }
+
+                div.innerHTML = `
+                    <div class="resumen">
+                        <p>${data.resumen}</p>
+                    </div>
+                `;
+            } catch (error) {
+                div.innerHTML = `<p style="color: #dc3545;">Error: ${error.message}</p>`;
+            } finally {
+                boton.disabled = false;
+                boton.textContent = 'Resumir';
+            }
+        }
+
+        cargarArticulos();
+    </script>
+</body>
+</html>
