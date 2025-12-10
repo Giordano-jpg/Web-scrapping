@@ -14,7 +14,7 @@ pip install beautifulsoup4
 ```
 
 ### Dependencias de Node.js
-
+Dentro de la carpeta node_modules (<-opcional)
 ```bash
 npm install
 ```
