@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { HfInference } from "@huggingface/inference";
 
-const HF_TOKEN = "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";
+const HF_TOKEN = "hf_1234...";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -92,3 +92,4 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`✅ Servidor en http://localhost:${PORT}`);
 });
+
