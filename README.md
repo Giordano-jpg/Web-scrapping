@@ -44,3 +44,5 @@ Abre en tu navegador: http://localhost:3000
 
 # Extras
 VS Code + extensión SQLite Viewer (para visualizar la base de datos)
+Generar y cambiar el token (Read) de Hugging Face en **server.js**: 
+> const HF_TOKEN = "hf_1234..."
